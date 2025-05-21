@@ -1,0 +1,21 @@
+services:
+  database:
+    image: postgres:17
+    volumes:
+      # Named volume to persist database data outside of container.
+      # Format is "named_volume:path/in/container"
+      - db_pg_data:/var/lib/postgresql/data
+      # Host mount for one-time initialization.
+      # Format is "./path/on/host:/path/in/container"
+    ports:
+      # Map to something other than default 5432 on host in case Postgres
+      # is also running natively on host.
+      # Format is "host:container"
+      - "${DATABASE_PORT}:5432"
+    environment:
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: "${DATABASE_USERNAME}"
+      POSTGRES_PASSWORD: "${DATABASE_PASSWORD}"
+
+volumes:
+  db_pg_data:

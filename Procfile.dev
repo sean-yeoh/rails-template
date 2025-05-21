@@ -1,0 +1,4 @@
+database: docker-compose up
+css: bin/rails tailwindcss:watch
+vite: bin/vite dev
+web: bin/rails server
