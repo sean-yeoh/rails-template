@@ -1,0 +1,29 @@
+[
+  {
+    "command": ["docker-compose", "up"],
+    "status": {
+      "database system is ready to accept connections": null
+    },
+    "defaultStatus": ["⏳", "S"]
+  },
+  {
+    "command": ["bin/rails", "tailwindcss:watch"]
+  },
+  {
+    "command": ["bin/vite", "dev"],
+    "status": {
+      "ready in": null
+    },
+    "defaultStatus": ["⏳", "S"]
+  },
+  {
+    "command": ["bin/rails", "server"],
+    "status": {
+      "Listening on": null
+    },
+    "defaultStatus": ["⏳", "S"]
+  },
+  {
+    "command": ["bin/rails", "solid_queue:start"]
+  }
+]

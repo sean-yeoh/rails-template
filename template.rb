@@ -15,6 +15,7 @@ def apply_template!
   template "mise.toml.tt", "mise.toml"
   copy_file "eslint.config.mjs", "eslint.config.mjs"
   copy_file "stylelintrc.json", ".stylelintrc.json"
+  copy_file "run-pty.json", "run-pty.json"
   copy_file "docker-compose.yml", "docker-compose.yml"
 
   gem "sqlite3"
@@ -47,6 +48,7 @@ def apply_template!
     
     copy_file "vite.config.mts", "vite.config.mts", force: true
     copy_file "rubocop.yml", ".rubocop.yml", force: true
+    copy_file "bin_dev", "bin/dev", force: true
 
     add_package_json_script("lint": "eslint 'app/javascript/**/*.{js,jsx}'")
 
@@ -58,7 +60,6 @@ def apply_template!
 
     copy_file "cable.yml", "config/cable.yml", force: true
     template "database.yml.tt", "config/database.yml", force: true
-    copy_file "Procfile.dev", "Procfile.dev", force: true
     copy_file "create_cable_schema.rb", "db/cable_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_cable_schema.rb"
     copy_file "create_cache_schema.rb", "db/cache_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_cache_schema.rb"
     copy_file "create_queue_schema.rb", "db/queue_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_queue_schema.rb"
@@ -152,7 +153,7 @@ def add_package_json_script(scripts)
 end
 
 def add_yarn_dependencies
-  run "yarn add --dev neostandard eslint stylelint stylelint-config-recommended stylelint-config-tailwindcss"
+  run "yarn add --dev run-pty neostandard eslint stylelint stylelint-config-recommended stylelint-config-tailwindcss"
   run "yarn add vite-plugin-rails"
 end
 
