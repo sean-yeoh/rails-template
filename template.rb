@@ -14,6 +14,7 @@ def apply_template!
   template "env.template", "env.template"
   template "mise.toml.tt", "mise.toml"
   copy_file "eslint.config.mjs", "eslint.config.mjs"
+  copy_file "stylelintrc.json", ".stylelintrc.json"
   copy_file "docker-compose.yml", "docker-compose.yml"
 
   gem "sqlite3"
@@ -50,23 +51,26 @@ def apply_template!
     add_package_json_script("lint": "eslint 'app/javascript/**/*.{js,jsx}'")
 
     run "yarn remove esbuild"
-
     run_autocorrections
+    commit_initial_setup
 
-    commit_first_setup
+    say "Initial setup completed. Applying database configuration files.", :blue
 
     copy_file "cable.yml", "config/cable.yml", force: true
     template "database.yml.tt", "config/database.yml", force: true
     copy_file "Procfile.dev", "Procfile.dev", force: true
-
     copy_file "create_cable_schema.rb", "db/cable_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_cable_schema.rb"
     copy_file "create_cache_schema.rb", "db/cache_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_cache_schema.rb"
     copy_file "create_queue_schema.rb", "db/queue_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_queue_schema.rb"
 
-    run "docker-compose up"
-    run "rails db:create"
-    run "rails db:migrate"
-    run "docker-compose down"
+    say "Successfully applied rails template.", :green
+    say "To complete the setup, please run the following commands to setup primary and solid cache/cable/queue databases.", :blue
+    say "It will create a postgresql database in docker, and sqlite3 database for solid cache/cable/queue.", :blue
+    say "$ cd #{app_name}", :blue
+    say "$ docker-compose up", :blue
+    say "$ rails db:create", :blue
+    say "$ rails db:migrate", :blue
+    say "$ docker-compose down", :blue
   end
 end
 
@@ -130,7 +134,7 @@ def assert_jsbundling
   fail Rails::Generators::Error, "This template requires jsbundling-rails, but the jsbundling-rails gem isn't present in your Gemfile."
 end
 
-def commit_first_setup
+def commit_initial_setup
   git checkout: "-b main"
   git add: "-A ."
   git commit: "-n -m 'First commit'"
@@ -148,8 +152,8 @@ def add_package_json_script(scripts)
 end
 
 def add_yarn_dependencies
-  run "yarn add --dev neostandard eslint"
-  run "yarn add vite-plugin-rails"  
+  run "yarn add --dev neostandard eslint stylelint stylelint-config-recommended stylelint-config-tailwindcss"
+  run "yarn add vite-plugin-rails"
 end
 
 def run_with_clean_bundler_env(cmd)

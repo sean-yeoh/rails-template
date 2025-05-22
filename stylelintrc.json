@@ -1,0 +1,7 @@
+{
+  "extends": ["stylelint-config-recommended", "stylelint-config-tailwindcss"],
+  "ignoreFiles": ["app/assets/builds/**/*.css"],
+  "rules": {
+    "at-rule-no-deprecated": [true, { "ignoreAtRules": ["apply"] }]
+  }
+}
