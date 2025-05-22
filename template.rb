@@ -54,7 +54,7 @@ def apply_template!
 
     run "yarn remove esbuild"
     run_autocorrections
-    commit_initial_setup
+    commit_files("First commit")
 
     say "Initial setup completed. Applying database configuration files.", :blue
 
@@ -73,6 +73,9 @@ def apply_template!
     queue_schema = queue_content[/ActiveRecord::Schema\[\d+\.\d+\]\.define\(.*?\) do\s*(.*)\s*end/m, 1]
     create_file "db/queue_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_queue_schema.rb", "class CreateQueueSchema < ActiveRecord::Migration[#{migration_version}]\n#{queue_schema}\nend"
 
+    run_autocorrections
+    commit_files("Apply database configuration files")
+    
     say "Successfully applied rails template.", :green
     say "To complete the setup, please run the following commands to setup primary and solid cache/cable/queue databases.", :blue
     say "It will create a postgresql database in docker, and sqlite3 database for solid cache/cable/queue.", :blue
@@ -144,10 +147,10 @@ def assert_jsbundling
   fail Rails::Generators::Error, "This template requires jsbundling-rails, but the jsbundling-rails gem isn't present in your Gemfile."
 end
 
-def commit_initial_setup
+def commit_files(message)
   git checkout: "-b main"
   git add: "-A ."
-  git commit: "-n -m 'First commit'"
+  git commit: "-n -m '#{message}'"
 end
 
 def run_autocorrections
