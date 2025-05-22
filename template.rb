@@ -45,7 +45,7 @@ def apply_template!
     run "bundle remove rubocop-rails-omakase"
 
     add_yarn_dependencies
-    
+
     copy_file "vite.config.mts", "vite.config.mts", force: true
     copy_file "rubocop.yml", ".rubocop.yml", force: true
     copy_file "bin_dev", "bin/dev", force: true
@@ -60,9 +60,18 @@ def apply_template!
 
     copy_file "cable.yml", "config/cable.yml", force: true
     template "database.yml.tt", "config/database.yml", force: true
-    copy_file "create_cable_schema.rb", "db/cable_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_cable_schema.rb"
-    copy_file "create_cache_schema.rb", "db/cache_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_cache_schema.rb"
-    copy_file "create_queue_schema.rb", "db/queue_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_queue_schema.rb"
+    migration_version = "#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}"
+    cable_content = File.read(File.join(destination_root, "db/cable_schema.rb"))
+    cable_schema = cable_content[/ActiveRecord::Schema\[\d+\.\d+\]\.define\(.*?\) do\s*(.*)\s*end/m, 1]
+    create_file "db/cable_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_cable_schema.rb", "class CreateCableSchema < ActiveRecord::Migration[#{migration_version}]\n#{cable_schema}\nend"
+
+    cache_content = File.read(File.join(destination_root, "db/cache_schema.rb"))
+    cache_schema = cache_content[/ActiveRecord::Schema\[\d+\.\d+\]\.define\(.*?\) do\s*(.*)\s*end/m, 1]
+    create_file "db/cache_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_cache_schema.rb", "class CreateCacheSchema < ActiveRecord::Migration[#{migration_version}]\n#{cache_schema}\nend"
+
+    queue_content = File.read(File.join(destination_root, "db/queue_schema.rb"))
+    queue_schema = queue_content[/ActiveRecord::Schema\[\d+\.\d+\]\.define\(.*?\) do\s*(.*)\s*end/m, 1]
+    create_file "db/queue_migrate/#{Time.now.utc.strftime("%Y%m%d%H%M%S")}_create_queue_schema.rb", "class CreateQueueSchema < ActiveRecord::Migration[#{migration_version}]\n#{queue_schema}\nend"
 
     say "Successfully applied rails template.", :green
     say "To complete the setup, please run the following commands to setup primary and solid cache/cable/queue databases.", :blue

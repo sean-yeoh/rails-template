@@ -7,7 +7,6 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mattbrictson/rails-template/ci.yml)](https://github.com/mattbrictson/rails-template/actions/workflows/ci.yml)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/mattbrictson/rails-template/ci-vite.yml?label=vite+build)](https://github.com/mattbrictson/rails-template/actions/workflows/ci-vite.yml)
 
-
 ## About
 
 This is the application template that I recommend for Rails 7 projects. I've assembled this template over the years to include best-practices, tweaks, documentation, and personal preferences, while still generally adhering to the "Rails way".
@@ -28,16 +27,16 @@ I've written several blog posts on techniques, helpers, and boilerplate that are
 
 This template currently requires:
 
-* **Rails 7.1**
-* **Ruby 3.1 or newer**
-* PostgreSQL
-* Node 16.14+ or 18+, and Yarn 1.x
+- **Rails 7.1**
+- **Ruby 3.1 or newer**
+- PostgreSQL
+- Node 16.14+ or 18+, and Yarn 1.x
 
 For older versions of Rails, you can use one of [these branches](https://github.com/mattbrictson/rails-template/branches/all) going back all the way to Rails 4.2.
 
 ## Installation
 
-*Optional.*
+_Optional._
 
 To make this the default Rails application template on your system, create a `~/.railsrc` file with these contents:
 
@@ -61,7 +60,7 @@ rails new blog \
   -m https://raw.githubusercontent.com/mattbrictson/rails-template/main/template.rb
 ```
 
-*Remember that options must go after the name of the application.* The only database supported by this template is `postgresql`.
+_Remember that options must go after the name of the application._ The only database supported by this template is `postgresql`.
 
 If you’ve installed this template as your default (using `~/.railsrc` as described above), then all you have to do is run:
 
@@ -92,24 +91,24 @@ If you don't specify `--javascript vite`, then this template will use the standa
 
 #### These gems are added to the standard Rails stack
 
-* Core
-    * [sidekiq][] – Redis-based job queue implementation for Active Job
-* Configuration
-    * [dotenv][] – for local configuration
-* Utilities
-    * [annotate][] – auto-generates schema documentation
-    * [good_migrations][] - prevents app models from being improperly referenced in migrations
-* Linting
-    * [rubocop][] – enforces Ruby code style
-    * [erblint][] – applies rubocop rules within html.erb files
-    * [stylelint][] – checks (S)CSS files
-    * [eslint][] – checks JS/TS files
-* Security
-    * [brakeman][] and [bundler-audit][] – detect security vulnerabilities
-* Testing
-    * [capybara-lockstep][] – for more reliable browser testing
-    * [factory_bot_rails][] – for easy setup of test data
-    * [shoulda][] – shortcuts for common ActiveRecord tests
+- Core
+  - [sidekiq][] – Redis-based job queue implementation for Active Job
+- Configuration
+  - [dotenv][] – for local configuration
+- Utilities
+  - [annotate][] – auto-generates schema documentation
+  - [good_migrations][] - prevents app models from being improperly referenced in migrations
+- Linting
+  - [rubocop][] – enforces Ruby code style
+  - [erblint][] – applies rubocop rules within html.erb files
+  - [stylelint][] – checks (S)CSS files
+  - [eslint][] – checks JS/TS files
+- Security
+  - [brakeman][] and [bundler-audit][] – detect security vulnerabilities
+- Testing
+  - [capybara-lockstep][] – for more reliable browser testing
+  - [factory_bot_rails][] – for easy setup of test data
+  - [shoulda][] – shortcuts for common ActiveRecord tests
 
 #### Postmark
 
@@ -117,7 +116,7 @@ I like to use [Postmark][] for transactional email, and so I've included the [po
 
 #### Other tweaks that patch over some Rails shortcomings
 
-* A much-improved `bin/setup` script
+- A much-improved `bin/setup` script
 
 ## How does it work?
 
@@ -129,18 +128,18 @@ This temporary directory is then added to the `source_paths` of the Rails genera
 
 Rails generators are very lightly documented; what you’ll find is that most of the heavy lifting is done by [Thor][]. The most common methods used by this template are Thor’s `copy_file`, `template`, and `gsub_file`. You can dig into the well-organized and well-documented [Thor source code][thor] to learn more.
 
-[sidekiq]:http://sidekiq.org
-[dotenv]:https://github.com/bkeepers/dotenv
-[annotate]:https://github.com/ctran/annotate_models
-[rubocop]:https://github.com/bbatsov/rubocop
-[erblint]:https://github.com/Shopify/erb-lint
-[factory_bot_rails]:https://github.com/thoughtbot/factory_bot_rails
-[Postmark]:http://postmarkapp.com
-[postmark-rails]:http://www.rubydoc.info/gems/postmark-rails/0.12.0
-[brakeman]:https://github.com/presidentbeef/brakeman
-[bundler-audit]:https://github.com/rubysec/bundler-audit
-[shoulda]:https://github.com/thoughtbot/shoulda
-[application templates]:http://guides.rubyonrails.org/generators.html#application-templates
+[sidekiq]: http://sidekiq.org
+[dotenv]: https://github.com/bkeepers/dotenv
+[annotate]: https://github.com/ctran/annotate_models
+[rubocop]: https://github.com/bbatsov/rubocop
+[erblint]: https://github.com/Shopify/erb-lint
+[factory_bot_rails]: https://github.com/thoughtbot/factory_bot_rails
+[Postmark]: http://postmarkapp.com
+[postmark-rails]: http://www.rubydoc.info/gems/postmark-rails/0.12.0
+[brakeman]: https://github.com/presidentbeef/brakeman
+[bundler-audit]: https://github.com/rubysec/bundler-audit
+[shoulda]: https://github.com/thoughtbot/shoulda
+[application templates]: http://guides.rubyonrails.org/generators.html#application-templates
 [template.rb]: template.rb
 [thor]: https://github.com/rails/thor
 [vite]: https://vite-ruby.netlify.app
@@ -148,3 +147,5 @@ Rails generators are very lightly documented; what you’ll find is that most of
 [capybara-lockstep]: https://github.com/makandra/capybara-lockstep
 [eslint]: https://eslint.org
 [stylelint]: https://stylelint.io
+
+rails new myapp -m rails-template/template.rb -d postgresql -j esbuild
