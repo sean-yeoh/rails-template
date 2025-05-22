@@ -54,6 +54,8 @@ def apply_template!
 
     run "yarn remove esbuild"
     run_autocorrections
+  
+    git checkout: "-b main"
     commit_files("First commit")
 
     say "Initial setup completed. Applying database configuration files.", :blue
@@ -148,7 +150,6 @@ def assert_jsbundling
 end
 
 def commit_files(message)
-  git checkout: "-b main"
   git add: "-A ."
   git commit: "-n -m '#{message}'"
 end
