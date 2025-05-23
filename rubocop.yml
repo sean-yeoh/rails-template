@@ -13,3 +13,6 @@ require:
 
 inherit_gem:
   standard: config/base.yml
+
+Lint/AssignmentInCondition:
+  Enabled: false
