@@ -166,7 +166,7 @@ def add_package_json_script(scripts)
 end
 
 def add_yarn_dependencies
-  run "yarn add --dev run-pty neostandard eslint stylelint stylelint-config-recommended stylelint-config-tailwindcss"
+  run "yarn add --dev run-pty neostandard eslint eslint-config-prettier stylelint stylelint-config-recommended stylelint-config-tailwindcss"
   run "yarn add vite-plugin-rails"
 end
 
