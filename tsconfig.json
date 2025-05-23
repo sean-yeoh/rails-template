@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "esModuleInterop": true,
+  }
+}

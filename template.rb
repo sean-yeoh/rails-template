@@ -17,6 +17,7 @@ def apply_template!
   copy_file "stylelintrc.json", ".stylelintrc.json"
   copy_file "run-pty.json", "run-pty.json"
   copy_file "docker-compose.yml", "docker-compose.yml"
+  copy_file "tsconfig.json", "tsconfig.json"
 
   gem "sqlite3"
   gem "vite_rails"
@@ -166,7 +167,7 @@ def add_package_json_script(scripts)
 end
 
 def add_yarn_dependencies
-  run "yarn add --dev run-pty neostandard eslint eslint-config-prettier stylelint stylelint-config-recommended stylelint-config-tailwindcss"
+  run "yarn add --dev run-pty neostandard eslint eslint-config-prettier stylelint stylelint-config-recommended stylelint-config-tailwindcss @types/node"
   run "yarn add vite-plugin-rails"
 end
 
