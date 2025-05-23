@@ -4,5 +4,10 @@
     "strict": true,
     "noImplicitReturns": true,
     "esModuleInterop": true,
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "types": ["vite/client"],
+    "baseUrl": "."
   }
 }
