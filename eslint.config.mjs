@@ -1,4 +1,10 @@
-import neostandard from 'neostandard'
-import eslintConfigPrettier from 'eslint-config-prettier/flat'
+import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 
-export default [...neostandard({ noStyle: true }), eslintConfigPrettier]
+export default [
+  eslintPluginUnicorn.configs.recommended,
+  {
+    rules: {
+      'unicorn/better-regex': 'warn',
+    },
+  },
+]

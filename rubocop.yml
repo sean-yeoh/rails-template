@@ -1,18 +1,13 @@
+inherit_gem:
+  rubocop-rails-omakase: rubocop.yml
+  rubocop-shopify: rubocop.yml
+
+plugins:
+  - rubocop-minitest
+  - rubocop-performance
 # Overwrite or add rules to create your own house style
 #
 # # Use `[a, [b, c]]` not `[ a, [ b, c ] ]`
 # Layout/SpaceInsideArrayLiteralBrackets:
 #   Enabled: false
 
-require:
-  - standard
-  - rubocop-rails
-  - rubocop-minitest
-  - rubocop-performance
-  - rubocop-capybara
-
-inherit_gem:
-  standard: config/base.yml
-
-Lint/AssignmentInCondition:
-  Enabled: false

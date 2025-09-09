@@ -7,7 +7,6 @@ def apply_template!
   assert_minimum_rails_version
   assert_minimum_node_version
   assert_postgresql
-  assert_jsbundling
   add_template_repository_to_source_path
 
   template "env.template", ".env"
@@ -18,21 +17,22 @@ def apply_template!
   copy_file "run-pty.json", "run-pty.json"
   copy_file "docker-compose.yml", "docker-compose.yml"
   copy_file "tsconfig.json", "tsconfig.json"
+  copy_file "erb_lint.yml", ".erb_lint.yml"
+  copy_file "lint.rake", "lib/tasks/lint.rake"
 
   gem "sqlite3"
   gem "vite_rails"
   gem "tailwindcss-rails"
 
   gem_group :development, :test do
-    gem "standard", require: false
-    gem "rubocop-rails", require: false
-    gem "rubocop-minitest", require: false
-    gem "rubocop-performance", require: false
-    gem "rubocop-capybara", require: false
     gem "dotenv"
   end
 
   gem_group :development do
+    gem "rubocop-shopify", require: false
+    gem "rubocop-minitest", require: false
+    gem "rubocop-performance", require: false
+    gem 'erb_lint', require: false
     gem "htmlbeautifier", require: false
   end
 
@@ -43,19 +43,21 @@ def apply_template!
   after_bundle do
     run "bundle exec vite install"
     run "rails tailwindcss:install"
-    run "bundle remove rubocop-rails-omakase"
-
-    add_yarn_dependencies
+    add_package_json_dependencies
 
     copy_file "vite.config.mts", "vite.config.mts", force: true
     copy_file "rubocop.yml", ".rubocop.yml", force: true
     copy_file "bin_dev", "bin/dev", force: true
+    
+    add_package_json_script("lintjs": "eslint 'app/javascript/**/*.{js,jsx}'")
+    add_package_json_script("lintcss": "stylelint '**/*.css'")
 
-    add_package_json_script("lint": "eslint 'app/javascript/**/*.{js,jsx}'")
-
-    run "yarn remove esbuild"
     run_autocorrections
   
+    run "rm package-lock.json"
+    run "rm vite.config.ts"
+    run "rm -rf node_modules"
+
     git checkout: "-b main"
     commit_files("First commit")
 
@@ -83,7 +85,8 @@ def apply_template!
     say "To complete the setup, please run the following commands to setup primary and solid cache/cable/queue databases.", :blue
     say "It will create a postgresql database in docker, and sqlite3 database for solid cache/cable/queue.", :blue
     say "$ cd #{app_name}", :blue
-    say "$ docker-compose up", :blue
+    say "$ pnpm install", :blue
+    say "$ docker-compose up -d", :blue
     say "$ rails db:create", :blue
     say "$ rails db:migrate", :blue
     say "$ docker-compose down", :blue
@@ -145,11 +148,6 @@ def assert_postgresql
   fail Rails::Generators::Error, "This template requires PostgreSQL, but the pg gem isn't present in your Gemfile."
 end
 
-def assert_jsbundling
-  return if IO.read("Gemfile") =~ /^\s*gem ['"]jsbundling-rails['"]/
-  fail Rails::Generators::Error, "This template requires jsbundling-rails, but the jsbundling-rails gem isn't present in your Gemfile."
-end
-
 def commit_files(message)
   git add: "-A ."
   git commit: "-n -m '#{message}'"
@@ -157,7 +155,7 @@ end
 
 def run_autocorrections
   run_with_clean_bundler_env "bin/rubocop -A --fail-level A > /dev/null || true"
-  run "npm run -- lint --fix"
+  # run "pnpm run \"/^lint/\""
 end
 
 def add_package_json_script(scripts)
@@ -166,9 +164,9 @@ def add_package_json_script(scripts)
   end
 end
 
-def add_yarn_dependencies
-  run "yarn add --dev run-pty neostandard eslint eslint-config-prettier stylelint stylelint-config-recommended stylelint-config-tailwindcss @types/node"
-  run "yarn add vite-plugin-rails"
+def add_package_json_dependencies
+  run "npm install --save-dev run-pty eslint eslint-plugin-unicorn stylelint stylelint-config-recommended stylelint-config-tailwindcss @types/node"
+  run "npm install vite-plugin-rails"
 end
 
 def run_with_clean_bundler_env(cmd)
