@@ -1,4 +1,0 @@
-[tools]
-ruby = "<%= RUBY_VERSION %>"
-node = "20.19.5"
-pnpm = "10.15.1"

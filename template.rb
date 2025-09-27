@@ -1,5 +1,6 @@
 require "bundler"
 require "json"
+require "debug"
 RAILS_REQUIREMENT = "~> 8".freeze
 NODE_REQUIREMENTS = ["~> 20"].freeze
 
@@ -9,16 +10,16 @@ def apply_template!
   assert_postgresql
   add_template_repository_to_source_path
 
-  template "env.template", ".env"
-  template "env.template", "env.template"
-  template "mise.toml.tt", "mise.toml"
-  copy_file "eslint.config.mjs", "eslint.config.mjs"
-  copy_file "stylelintrc.json", ".stylelintrc.json"
-  copy_file "run-pty.json", "run-pty.json"
-  copy_file "docker-compose.yml", "docker-compose.yml"
-  copy_file "tsconfig.json", "tsconfig.json"
-  copy_file "erb_lint.yml", ".erb_lint.yml"
-  copy_file "lint.rake", "lib/tasks/lint.rake"
+  template "templates/env.template", ".env"
+  template "templates/env.template", "env.template"
+  template "templates/mise.toml.tt", "mise.toml"
+  copy_file "templates/eslint.config.mjs", "eslint.config.mjs"
+  copy_file "templates/stylelintrc.json", ".stylelintrc.json"
+  copy_file "templates/run-pty.json", "run-pty.json"
+  copy_file "templates/docker-compose.yml", "docker-compose.yml"
+  copy_file "templates/tsconfig.json", "tsconfig.json"
+  copy_file "templates/erb_lint.yml", ".erb_lint.yml"
+  copy_file "templates/lib/tasks/lint.rake", "lib/tasks/lint.rake"
 
   gem "sqlite3"
   gem "vite_rails"
@@ -41,30 +42,34 @@ def apply_template!
   environment 'config.cache_store = :solid_cache_store', env: "development"
 
   after_bundle do
-    run "bundle exec vite install"
-    run "rails tailwindcss:install"
-    add_package_json_dependencies
-
-    copy_file "vite.config.mts", "vite.config.mts", force: true
-    copy_file "rubocop.yml", ".rubocop.yml", force: true
-    copy_file "bin_dev", "bin/dev", force: true
-    
-    add_package_json_script("lintjs": "eslint 'app/javascript/**/*.{js,jsx}'")
-    add_package_json_script("lintcss": "stylelint '**/*.css'")
-
-    run_autocorrections
-  
-    run "rm package-lock.json"
-    run "rm vite.config.ts"
-    run "rm -rf node_modules"
-
     git checkout: "-b main"
     commit_files("First commit")
 
+    run "mise install"
+
+    run "pnpm install --save-dev vite"
+    run "bundle exec vite install"
+    copy_file "templates/vite.config.mts", "vite.config.mts", force: true
+    commit_files("Run vite install")
+
+    add_js_dependencies
+    add_package_json_script("lintjs": "eslint 'app/frontend/**/*.{js,jsx,ts,tsx}'")
+    add_package_json_script("lintcss": "stylelint '**/*.css'")
+    commit_files("Add js dependencies and lint scripts")
+
+    run "rails tailwindcss:install"
+    commit_files("Run tailwind install")
+
+    copy_file "templates/vite.config.mts", "vite.config.mts", force: true
+    copy_file "templates/rubocop.yml", ".rubocop.yml", force: true
+    copy_file "templates/bin/dev", "bin/dev", force: true
+    run_autocorrections
+    commit_files("Replace rucobop, vite and bin/dev script")
+
     say "Initial setup completed. Applying database configuration files.", :blue
 
-    copy_file "cable.yml", "config/cable.yml", force: true
-    template "database.yml.tt", "config/database.yml", force: true
+    copy_file "templates/config/cable.yml", "config/cable.yml", force: true
+    template "templates/config/database.yml.tt", "config/database.yml", force: true
     migration_version = "#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}"
     cable_content = File.read(File.join(destination_root, "db/cable_schema.rb"))
     cable_schema = cable_content[/ActiveRecord::Schema\[\d+\.\d+\]\.define\(.*?\) do\s*(.*)\s*end/m, 1]
@@ -85,7 +90,6 @@ def apply_template!
     say "To complete the setup, please run the following commands to setup primary and solid cache/cable/queue databases.", :blue
     say "It will create a postgresql database in docker, and sqlite3 database for solid cache/cable/queue.", :blue
     say "$ cd #{app_name}", :blue
-    say "$ pnpm install", :blue
     say "$ docker-compose up -d", :blue
     say "$ rails db:create", :blue
     say "$ rails db:migrate", :blue
@@ -155,18 +159,18 @@ end
 
 def run_autocorrections
   run_with_clean_bundler_env "bin/rubocop -A --fail-level A > /dev/null || true"
-  # run "pnpm run \"/^lint/\""
+  run "pnpm run \"/^lint/\" --fix"
 end
 
 def add_package_json_script(scripts)
   scripts.each do |name, script|
-    run ["npm", "pkg", "set", "scripts.#{name.to_s.shellescape}=#{script.shellescape}"].join(" ")
+    run ["pnpm", "pkg", "set", "scripts.#{name.to_s.shellescape}=#{script.shellescape}"].join(" ")
   end
 end
 
-def add_package_json_dependencies
-  run "npm install --save-dev run-pty eslint eslint-plugin-unicorn stylelint stylelint-config-recommended stylelint-config-tailwindcss @types/node"
-  run "npm install vite-plugin-rails"
+def add_js_dependencies
+  run "pnpm install --save-dev run-pty eslint eslint-plugin-unicorn stylelint stylelint-config-recommended stylelint-config-tailwindcss @types/node"
+  run "pnpm install vite-plugin-rails"
 end
 
 def run_with_clean_bundler_env(cmd)
