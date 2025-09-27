@@ -12,7 +12,7 @@ This template currently requires:
 ## Usage
 
 ```$ bash
-rails new <my_app> -d postgresql -j esbuild \
+rails new <my_app> -d postgresql --skip-javascript \
   -m https://raw.githubusercontent.com/sean-yeoh/rails-template/main/template.rb
 ```
 
