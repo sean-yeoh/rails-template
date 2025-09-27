@@ -55,7 +55,7 @@ def apply_template!
 
     add_js_dependencies
     add_package_json_script("lintjs": "eslint 'app/frontend/**/*.{js,jsx,ts,tsx}'")
-    add_package_json_script("lintcss": "stylelint '**/*.css'")
+    add_package_json_script("lintcss": "stylelint 'app/**/*.css'")
     commit_files("Add js dependencies and lint scripts")
 
     run "rails tailwindcss:install"

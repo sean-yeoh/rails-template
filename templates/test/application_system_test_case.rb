@@ -5,6 +5,10 @@ class CapybaraNullDriver < Capybara::Driver::Base
   def needs_server?
     true
   end
+
+  def save_screenshot(path, **options)
+    # noop
+  end
 end
 
 Capybara.register_driver(:null) { CapybaraNullDriver.new }
@@ -13,7 +17,7 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   driven_by :null
 
   def self.playwright
-  @playwright ||= Playwright.create(playwright_cli_executable_path: Rails.root.join("node_modules/.bin/playwright"))
+    @playwright ||= Playwright.create(playwright_cli_executable_path: Rails.root.join("node_modules/.bin/playwright"))
   end
 
   def before_setup
