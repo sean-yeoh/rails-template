@@ -183,7 +183,7 @@ def add_package_json_script(scripts)
 end
 
 def add_js_dependencies
-  run "pnpm install --save-dev run-pty eslint eslint-plugin-unicorn stylelint stylelint-config-recommended stylelint-config-tailwindcss @types/node playwright"
+  run "pnpm install --save-dev run-pty eslint eslint-plugin-unicorn @eslint/js typescript typescript-eslint globals stylelint stylelint-config-recommended stylelint-config-tailwindcss @types/node playwright"
   run "pnpm install vite-plugin-rails"
 end
 
