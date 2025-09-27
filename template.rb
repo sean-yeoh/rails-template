@@ -27,6 +27,7 @@ def apply_template!
 
   gem_group :development, :test do
     gem "dotenv"
+    gem "playwright-ruby-client"
   end
 
   gem_group :development do
@@ -66,6 +67,17 @@ def apply_template!
     run_autocorrections
     commit_files("Replace rucobop, vite and bin/dev script")
 
+    route "root 'home#index'"
+    generate(:controller, "home index")
+    create_file "app/views/home/index.html.erb", <<-ERB, force: true
+    <h1>Welcome</h1>
+    ERB
+    copy_file "templates/test/system/home_test.rb", "test/system/home_test.rb", force: true
+    copy_file "templates/test/application_system_test_case.rb", "test/application_system_test_case.rb", force: true
+
+    commit_files("Setup files for playwright")
+
+
     say "Initial setup completed. Applying database configuration files.", :blue
 
     copy_file "templates/config/cable.yml", "config/cable.yml", force: true
@@ -86,6 +98,8 @@ def apply_template!
     run_autocorrections
     commit_files("Apply database configuration files")
     
+    
+
     say "Successfully applied rails template.", :green
     say "To complete the setup, please run the following commands to setup primary and solid cache/cable/queue databases.", :blue
     say "It will create a postgresql database in docker, and sqlite3 database for solid cache/cable/queue.", :blue
@@ -169,7 +183,7 @@ def add_package_json_script(scripts)
 end
 
 def add_js_dependencies
-  run "pnpm install --save-dev run-pty eslint eslint-plugin-unicorn stylelint stylelint-config-recommended stylelint-config-tailwindcss @types/node"
+  run "pnpm install --save-dev run-pty eslint eslint-plugin-unicorn stylelint stylelint-config-recommended stylelint-config-tailwindcss @types/node playwright"
   run "pnpm install vite-plugin-rails"
 end
 
