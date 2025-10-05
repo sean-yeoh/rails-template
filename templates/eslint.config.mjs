@@ -1,4 +1,4 @@
-import { defineConfig } from 'eslint/config'
+import { defineConfig, globalIgnores } from 'eslint/config'
 import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
@@ -21,4 +21,5 @@ export default defineConfig([
       'unicorn/better-regex': 'warn',
     },
   },
+  globalIgnores(['./vendor']),
 ])
